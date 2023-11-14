@@ -59,8 +59,8 @@ const updateProduct = asyncHandler(async (req, res) => {
       category,
       description,
       quantity,
-      size,
-      color,
+      sizes,
+      colors,
       price,
       images,
     } = req.body;
@@ -71,8 +71,8 @@ const updateProduct = asyncHandler(async (req, res) => {
       product.category = category || product.category;
       product.description = description || product.description;
       product.quantity = quantity || product.quantity;
-      product.size = size || product.size;
-      product.color = color || product.color;
+      product.sizes = sizes || product.sizes;
+      product.colors = colors || product.colors;
       product.price = price || product.price;
       product.images = images || product.images;
       const updatedProduct = await product.save();

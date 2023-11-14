@@ -127,23 +127,31 @@ const changePassword = asyncHandler(async (req, res) => {
 // add product like list
 
 const addLikedProduct = asyncHandler(async (req, res) => {
-  const { productId } = req.body;
+  const { productId, size, color } = req.body;
 
   try {
     // Tìm người dùng bằng id
     const user = await User.findById(req.user._id);
-    /* console.log('user: ' + user); */
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Kiểm tra xem sản phẩm đã có trong danh sách yêu thích chưa
-    if (user.likedProduct.includes(productId)) {
+    const existingProductIndex = user.likedProduct.findIndex(
+      (product) => product.productId === productId
+    );
+
+    if (existingProductIndex !== -1) {
       return res.status(400).json({ message: 'Product already liked' });
     }
 
-    // Thêm sản phẩm vào danh sách yêu thích
-    user.likedProduct.push(productId);
+    // Thêm sản phẩm vào danh sách yêu thích với thông tin thêm
+    user.likedProduct.push({
+      productId,
+      size,
+      color,
+    });
     await user.save();
 
     res.status(200).json({ message: 'Product added to liked list' });

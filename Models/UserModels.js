@@ -38,8 +38,17 @@ const UserSchema = mongoose.Schema({
   },
   likedProduct: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      _id: false,
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+      size: {
+        type: String,
+      },
+      color: {
+        type: String,
+      },
     },
   ],
 });
