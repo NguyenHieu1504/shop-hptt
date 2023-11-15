@@ -86,6 +86,9 @@ const ProductSchema = mongoose.Schema({
     default: 0,
   },
   comments: [reviewSchema],
+  
+},{
+  timestamps: true,
 });
 
 export default mongoose.model('Product', ProductSchema);

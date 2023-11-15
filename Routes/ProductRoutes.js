@@ -7,7 +7,8 @@ import {
   deleteReviewProduct,
   updateProduct,
   viewDetailProduct,
-  showProductGender
+  showProductGender,
+  showNewProducts
 } from '../Controller/ProductController.js';
 
 /* Public routes */
@@ -17,7 +18,8 @@ router.post('/createProduct', protect, isAdmin, createProduct);
 router.put('/:id/updateProduct', protect, isAdmin, updateProduct);
 router.delete('/:id/deleteProduct', protect, isAdmin, deleteProduct);
 router.get('/:id/viewProduct', viewDetailProduct);
-router.get('/list/:gender', showProductGender)
+router.get('/list/:gender', showProductGender);
+router.get('/new/list/', showNewProducts);
 
 
 // review product

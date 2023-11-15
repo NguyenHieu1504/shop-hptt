@@ -56,6 +56,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const showProductGender = asyncHandler(async (req, res) => {
   try {
+    console.log("==llllllllllllllllllll=================")
     const { gender } = req.params;
 
     // Validate if the provided gender is valid
@@ -73,6 +74,22 @@ const showProductGender = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, error: 'Server Error' });
   }
 });
+
+const showNewProducts = asyncHandler(async (req, res) => {
+  try {
+    // Lấy ngày hiện tại
+    const currentDate = new Date();
+    console.log("===================")
+    // Tìm 5 sản phẩm có createdAt gần với hôm nay nhất
+    const newProducts = await Product.find()
+      .sort({ created_at: -1 }) // Sắp xếp giảm dần theo created_at
+      .limit(5);
+
+    res.json(newProducts);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}) 
 
 // api updateProduct
 const updateProduct = asyncHandler(async (req, res) => {
@@ -244,5 +261,6 @@ export {
   viewDetailProduct,
   createReviewProduct,
   deleteReviewProduct,
-  showProductGender
+  showProductGender,
+  showNewProducts
 };
