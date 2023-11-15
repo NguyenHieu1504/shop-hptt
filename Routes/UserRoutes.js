@@ -3,6 +3,7 @@ import {
   addLikedProduct,
   changePassword,
   deleteLikedProduct,
+  getLikedProducts,
   loginUser,
   registerUser,
   updateProfileUser,
@@ -19,4 +20,5 @@ router.put('/changepassword', protect, changePassword);
 
 router.post('/addLikedProduct', protect, addLikedProduct);
 router.delete('/deleteLikedProduct', protect, deleteLikedProduct);
+router.get('/getLikedProduct', protect, getLikedProducts);
 export default router;

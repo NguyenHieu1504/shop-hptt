@@ -25,4 +25,9 @@ const createVoucher = asyncHandler(async (req, res) => {
   }
 });
 
-export { createVoucher };
+const getAllVouchers = asyncHandler(async (req, res) => {
+  const vouchers = await Voucher.find({});
+  res.status(200).json(vouchers);
+});
+
+export { createVoucher, getAllVouchers };

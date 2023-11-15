@@ -131,7 +131,7 @@ const createReviewProduct = asyncHandler(async (req, res) => {
       );
       if (alreadyReview) {
         res.status(400);
-        throw new Error('You already review this movie');
+        throw new Error('You already review this product');
       }
       // else create a new movie
       const review = {
@@ -154,7 +154,7 @@ const createReviewProduct = asyncHandler(async (req, res) => {
       });
     } else {
       res.status(404);
-      throw new Error('Movie not found');
+      throw new Error('Product not found');
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -212,6 +212,12 @@ const deleteReviewProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// get all prodcuts from db
+const getAllProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({});
+  res.json(products);
+});
+
 export {
   createProduct,
   updateProduct,
@@ -219,4 +225,5 @@ export {
   viewDetailProduct,
   createReviewProduct,
   deleteReviewProduct,
+  getAllProducts,
 };

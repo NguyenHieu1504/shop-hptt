@@ -5,6 +5,7 @@ import {
   createReviewProduct,
   deleteProduct,
   deleteReviewProduct,
+  getAllProducts,
   updateProduct,
   viewDetailProduct,
 } from '../Controller/ProductController.js';
@@ -24,4 +25,7 @@ router.delete(
   protect,
   deleteReviewProduct
 );
+
+//
+router.get('/getAllProducts', getAllProducts);
 export default router;

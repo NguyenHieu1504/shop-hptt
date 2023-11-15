@@ -161,6 +161,18 @@ const addLikedProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// list product from addLikedProduct
+const getLikedProducts = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).populate(
+    'likedProduct.productId'
+  );
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  res.status(200).json(user.likedProduct);
+});
 // delete product liked list
 
 const deleteLikedProduct = asyncHandler(async (req, res) => {
@@ -169,13 +181,16 @@ const deleteLikedProduct = asyncHandler(async (req, res) => {
   try {
     // Tìm người dùng bằng id
     const user = await User.findById(req.user._id);
-    /* console.log('user: ' + user); */
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Kiểm tra xem sản phẩm có trong danh sách yêu thích không
-    const likedProductIndex = user.likedProduct.indexOf(productId);
+    const likedProductIndex = user.likedProduct.findIndex(
+      (product) => String(product.productId) === String(productId)
+    );
+
     if (likedProductIndex === -1) {
       return res.status(400).json({ message: 'Product is not liked yet' });
     }
@@ -186,10 +201,11 @@ const deleteLikedProduct = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: 'Product removed from liked list' });
   } catch (error) {
-    console.log('error', error);
+    console.error('Error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 export {
   registerUser,
   loginUser,
@@ -197,4 +213,5 @@ export {
   changePassword,
   addLikedProduct,
   deleteLikedProduct,
+  getLikedProducts,
 };
