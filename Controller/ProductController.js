@@ -13,6 +13,7 @@ const createProduct = asyncHandler(async (req, res) => {
     quantity,
     sizes,
     colors,
+    gender,
     price,
     images,
   } = req.body;
@@ -22,6 +23,7 @@ const createProduct = asyncHandler(async (req, res) => {
     !category ||
     !description ||
     !quantity ||
+    !gender ||
     !sizes ||
     !colors ||
     !price ||
@@ -37,6 +39,7 @@ const createProduct = asyncHandler(async (req, res) => {
     description,
     quantity,
     sizes,
+    gender,
     colors,
     price,
     images,
@@ -47,8 +50,28 @@ const createProduct = asyncHandler(async (req, res) => {
       res.status(201).json({ message: 'Product created successfully' });
     })
     .catch((error) => {
-      res.status(500).json({ error: 'Failed to create product' });
+      res.status(500).json({ error: 'Failed to create product', error });
     });
+});
+
+const showProductGender = asyncHandler(async (req, res) => {
+  try {
+    const { gender } = req.params;
+
+    // Validate if the provided gender is valid
+    if (!['M', 'L'].includes(gender)) {
+      return res.status(400).json({ message: 'Invalid gender parameter.' });
+    }
+
+    // Query products based on the specified gender
+    const products = await Product.find({ gender });
+
+    // You can customize the response based on your needs
+    res.status(200).json({ success: true, count: products.length, products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Server Error' });
+  }
 });
 
 // api updateProduct
@@ -60,6 +83,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       description,
       quantity,
       sizes,
+      gender,
       colors,
       price,
       images,
@@ -72,6 +96,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       product.description = description || product.description;
       product.quantity = quantity || product.quantity;
       product.sizes = sizes || product.sizes;
+      product.gender = gender || product.gender;
       product.colors = colors || product.colors;
       product.price = price || product.price;
       product.images = images || product.images;
@@ -219,4 +244,5 @@ export {
   viewDetailProduct,
   createReviewProduct,
   deleteReviewProduct,
+  showProductGender
 };

@@ -50,6 +50,12 @@ const ProductSchema = mongoose.Schema({
       required: true,
     },
   ],
+  gender:{
+    type: String,
+    enum: ['M', 'L'],
+    required: true,
+  },
+  
   colors: [
     {
       type: String,
