@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Product from '../Models/ProductModels.js';
+import Queue from '../Models/QueueModels.js';
 import asyncHandler from 'express-async-handler';
 import User from '../Models/UserModels.js';
 
@@ -63,6 +64,82 @@ const showAllProducts = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, error: 'Error fetching products' });
   }
 });
+const addProductsToQueue = asyncHandler(async (req, res) => {
+  const { idUser, idProduct } = req.body;
+
+  if (!idUser || !idProduct || !Array.isArray(idProduct)) {
+    return res.status(400).json({ success: false, error: 'Invalid data provided' });
+  }
+
+  try {
+    const newQueue = await Queue.create({ user_id: idUser, products: idProduct, isConfirm: 0 });
+
+    res.status(201).json({ success: true, data: newQueue });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error adding products to queue' });
+  }
+});
+
+const getQueueList = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({}).populate('products', 'name price'); // Sử dụng populate để lấy thông tin sản phẩm
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list' });
+  }
+});
+
+const getQueueListWithIsConfirmZero = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({ isConfirm: 0 }).populate('products', 'name price');
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+  }
+});
+
+const getQueueListWithIsConfirmOne = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({ isConfirm: 1 }).populate('products', 'name price');
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+  }
+});
+
+const getQueueListWithIsConfirmTwo = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({ isConfirm: 2 }).populate('products', 'name price');
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+  }
+});
+
+const updateIsConfirm = asyncHandler(async (req, res) => {
+  const { queueId, newIsConfirmValue } = req.body;
+
+  if (!queueId || !newIsConfirmValue || ![0, 1, 2].includes(newIsConfirmValue)) {
+    return res.status(400).json({ success: false, error: 'Invalid data provided' });
+  }
+
+  try {
+    const updatedQueue = await Queue.findByIdAndUpdate(queueId, { isConfirm: newIsConfirmValue }, { new: true });
+
+    if (!updatedQueue) {
+      return res.status(404).json({ success: false, error: 'Queue not found' });
+    }
+
+    res.status(200).json({ success: true, data: updatedQueue });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error updating isConfirm in queue' });
+  }
+});
+
 
 
 const showProductGender = asyncHandler(async (req, res) => {
@@ -297,4 +374,10 @@ export {
   showNewProducts,
   showTrendProduct,
   showAllProducts,
+  addProductsToQueue,
+  getQueueList,
+  getQueueListWithIsConfirmZero,
+  getQueueListWithIsConfirmOne,
+  getQueueListWithIsConfirmTwo,
+  updateIsConfirm,
 };

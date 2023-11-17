@@ -10,7 +10,13 @@ import {
   showProductGender,
   showNewProducts,
   showTrendProduct,
-  showAllProducts
+  showAllProducts,
+  addProductsToQueue,
+  getQueueList,
+  getQueueListWithIsConfirmZero,
+  getQueueListWithIsConfirmOne,
+  getQueueListWithIsConfirmTwo,
+  updateIsConfirm
 } from '../Controller/ProductController.js';
 
 /* Public routes */
@@ -24,6 +30,13 @@ router.get('/list/:gender', showProductGender);
 router.get('/new/list/', showNewProducts);
 router.get('/trend/list/', showTrendProduct);
 router.get('/all/list/', showAllProducts);
+router.post('/queue/add',protect, isAdmin, addProductsToQueue);
+router.get('/queue/list/',protect, isAdmin, getQueueList);
+router.get('/isConfirmZero/queue/',protect, isAdmin, getQueueListWithIsConfirmZero);
+router.get('/isConfirmOne/queue/',protect, isAdmin, getQueueListWithIsConfirmOne);
+router.get('/isConfirmTwo/queue/',protect, isAdmin, getQueueListWithIsConfirmTwo);
+router.put('/updateIsConfirm/queue', updateIsConfirm);
+
 
 // review product
 router.post('/:id/reviewProduct', protect, createReviewProduct);
