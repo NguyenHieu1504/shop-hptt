@@ -54,6 +54,17 @@ const createProduct = asyncHandler(async (req, res) => {
     });
 });
 
+const showAllProducts = asyncHandler(async (req, res) => {
+  try {
+    const allProducts = await Product.find({});
+
+    res.status(200).json({ success: true, data: allProducts });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching products' });
+  }
+});
+
+
 const showProductGender = asyncHandler(async (req, res) => {
   try {
     console.log("==llllllllllllllllllll=================")
@@ -72,6 +83,27 @@ const showProductGender = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: 'Server Error' });
+  }
+});
+const showTrendProduct = asyncHandler(async (req, res) => {
+  try {
+    const trendingProducts = await Product.aggregate([
+      {
+        $addFields: {
+          avgRating: { $avg: "$rate" } // Tính trung bình rating của sản phẩm
+        }
+      },
+      {
+        $sort: { avgRating: -1 } // Sắp xếp theo trung bình rating giảm dần
+      },
+      {
+        $limit: 6 // Giới hạn số lượng sản phẩm lấy ra là 6
+      }
+    ]);
+
+    res.status(200).json({ success: true, data: trendingProducts });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching trending products' });
   }
 });
 
@@ -262,5 +294,7 @@ export {
   createReviewProduct,
   deleteReviewProduct,
   showProductGender,
-  showNewProducts
+  showNewProducts,
+  showTrendProduct,
+  showAllProducts,
 };
