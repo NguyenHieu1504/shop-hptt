@@ -14,21 +14,8 @@ const createOrder = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
     // Lấy thông tin sản phẩm từ body request
-    const { orderItems, paymentInfo, voucher } = req.body;
-
-    // Tính toán itemsPrice dựa trên giá và số lượng của từng sản phẩm
-    const itemsPrice = await Promise.all(
-      orderItems.map(async (item) => {
-        const productInfo = await Order.getProductInfo(item.productId);
-        if (productInfo) {
-          return productInfo.price * item.quantity;
-        }
-        return 0;
-      })
-    ).then((prices) => prices.reduce((total, price) => total + price, 0));
-
-    // Tính toán totalPrice dựa trên itemsPrice và shippingPrice
-    const totalPrice = itemsPrice + 25000;
+    const { orderItems, paymentInfo, voucher, totalPrice, orderStatus } =
+      req.body;
 
     // Tạo đơn hàng
     const newOrder = new Order({
@@ -36,7 +23,6 @@ const createOrder = asyncHandler(async (req, res) => {
       orderItems: [], // Bắt đầu với một mảng trống
       userId: req.user._id,
       paymentInfo,
-      itemsPrice,
       shippingPrice: 25000,
       voucher,
       totalPrice,
@@ -55,7 +41,7 @@ const createOrder = asyncHandler(async (req, res) => {
           size: item.size,
           color: item.color,
           images: Array.isArray(productInfo.images)
-            ? productInfo.images.join(', ') // Chuyển đổi mảng thành chuỗi
+            ? productInfo.images.join(', ')
             : productInfo.images,
         });
       }
