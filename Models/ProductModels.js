@@ -50,6 +50,12 @@ const ProductSchema = mongoose.Schema({
       required: true,
     },
   ],
+  gender:{
+    type: String,
+    enum: ['M', 'L'],
+    required: true,
+  },
+  
   colors: [
     {
       type: String,
@@ -80,6 +86,9 @@ const ProductSchema = mongoose.Schema({
     default: 0,
   },
   comments: [reviewSchema],
+  
+},{
+  timestamps: true,
 });
 
 export default mongoose.model('Product', ProductSchema);

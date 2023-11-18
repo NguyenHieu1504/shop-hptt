@@ -18,6 +18,7 @@ router.post('/login', loginUser);
 router.put('/updateProfile', protect, updateProfileUser);
 router.put('/changepassword', protect, changePassword);
 
+
 router.post('/addLikedProduct', protect, addLikedProduct);
 router.delete('/deleteLikedProduct', protect, deleteLikedProduct);
 router.get('/getLikedProduct', protect, getLikedProducts);

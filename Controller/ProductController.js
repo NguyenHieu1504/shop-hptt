@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Product from '../Models/ProductModels.js';
+import Queue from '../Models/QueueModels.js';
 import asyncHandler from 'express-async-handler';
 import User from '../Models/UserModels.js';
 
@@ -13,6 +14,7 @@ const createProduct = asyncHandler(async (req, res) => {
     quantity,
     sizes,
     colors,
+    gender,
     price,
     images,
   } = req.body;
@@ -22,6 +24,7 @@ const createProduct = asyncHandler(async (req, res) => {
     !category ||
     !description ||
     !quantity ||
+    !gender ||
     !sizes ||
     !colors ||
     !price ||
@@ -37,6 +40,7 @@ const createProduct = asyncHandler(async (req, res) => {
     description,
     quantity,
     sizes,
+    gender,
     colors,
     price,
     images,
@@ -47,9 +51,154 @@ const createProduct = asyncHandler(async (req, res) => {
       res.status(201).json({ message: 'Product created successfully' });
     })
     .catch((error) => {
-      res.status(500).json({ error: 'Failed to create product' });
+      res.status(500).json({ error: 'Failed to create product', error });
     });
 });
+
+const showAllProducts = asyncHandler(async (req, res) => {
+  try {
+    const allProducts = await Product.find({});
+
+    res.status(200).json({ success: true, data: allProducts });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching products' });
+  }
+});
+const addProductsToQueue = asyncHandler(async (req, res) => {
+  const { idUser, idProduct } = req.body;
+
+  if (!idUser || !idProduct || !Array.isArray(idProduct)) {
+    return res.status(400).json({ success: false, error: 'Invalid data provided' });
+  }
+
+  try {
+    const newQueue = await Queue.create({ user_id: idUser, products: idProduct, isConfirm: 0 });
+
+    res.status(201).json({ success: true, data: newQueue });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error adding products to queue' });
+  }
+});
+
+const getQueueList = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({}).populate('products', 'name price'); // Sử dụng populate để lấy thông tin sản phẩm
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list' });
+  }
+});
+
+const getQueueListWithIsConfirmZero = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({ isConfirm: 0 }).populate('products', 'name price');
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+  }
+});
+
+const getQueueListWithIsConfirmOne = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({ isConfirm: 1 }).populate('products', 'name price');
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+  }
+});
+
+const getQueueListWithIsConfirmTwo = asyncHandler(async (req, res) => {
+  try {
+    const queueList = await Queue.find({ isConfirm: 2 }).populate('products', 'name price');
+
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+  }
+});
+
+const updateIsConfirm = asyncHandler(async (req, res) => {
+  const { queueId, newIsConfirmValue } = req.body;
+
+  if (!queueId || !newIsConfirmValue || ![0, 1, 2].includes(newIsConfirmValue)) {
+    return res.status(400).json({ success: false, error: 'Invalid data provided' });
+  }
+
+  try {
+    const updatedQueue = await Queue.findByIdAndUpdate(queueId, { isConfirm: newIsConfirmValue }, { new: true });
+
+    if (!updatedQueue) {
+      return res.status(404).json({ success: false, error: 'Queue not found' });
+    }
+
+    res.status(200).json({ success: true, data: updatedQueue });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error updating isConfirm in queue' });
+  }
+});
+
+
+
+const showProductGender = asyncHandler(async (req, res) => {
+  try {
+    console.log("==llllllllllllllllllll=================")
+    const { gender } = req.params;
+
+    // Validate if the provided gender is valid
+    if (!['M', 'L'].includes(gender)) {
+      return res.status(400).json({ message: 'Invalid gender parameter.' });
+    }
+
+    // Query products based on the specified gender
+    const products = await Product.find({ gender });
+
+    // You can customize the response based on your needs
+    res.status(200).json({ success: true, count: products.length, products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Server Error' });
+  }
+});
+const showTrendProduct = asyncHandler(async (req, res) => {
+  try {
+    const trendingProducts = await Product.aggregate([
+      {
+        $addFields: {
+          avgRating: { $avg: "$rate" } // Tính trung bình rating của sản phẩm
+        }
+      },
+      {
+        $sort: { avgRating: -1 } // Sắp xếp theo trung bình rating giảm dần
+      },
+      {
+        $limit: 6 // Giới hạn số lượng sản phẩm lấy ra là 6
+      }
+    ]);
+
+    res.status(200).json({ success: true, data: trendingProducts });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error fetching trending products' });
+  }
+});
+
+const showNewProducts = asyncHandler(async (req, res) => {
+  try {
+    // Lấy ngày hiện tại
+    const currentDate = new Date();
+    console.log("===================")
+    // Tìm 5 sản phẩm có createdAt gần với hôm nay nhất
+    const newProducts = await Product.find()
+      .sort({ created_at: -1 }) // Sắp xếp giảm dần theo created_at
+      .limit(5);
+
+    res.json(newProducts);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}) 
 
 // api updateProduct
 const updateProduct = asyncHandler(async (req, res) => {
@@ -60,6 +209,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       description,
       quantity,
       sizes,
+      gender,
       colors,
       price,
       images,
@@ -72,6 +222,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       product.description = description || product.description;
       product.quantity = quantity || product.quantity;
       product.sizes = sizes || product.sizes;
+      product.gender = gender || product.gender;
       product.colors = colors || product.colors;
       product.price = price || product.price;
       product.images = images || product.images;
@@ -225,5 +376,18 @@ export {
   viewDetailProduct,
   createReviewProduct,
   deleteReviewProduct,
+<<<<<<< HEAD
   getAllProducts,
+=======
+  showProductGender,
+  showNewProducts,
+  showTrendProduct,
+  showAllProducts,
+  addProductsToQueue,
+  getQueueList,
+  getQueueListWithIsConfirmZero,
+  getQueueListWithIsConfirmOne,
+  getQueueListWithIsConfirmTwo,
+  updateIsConfirm,
+>>>>>>> ce87e61b5e94ed4d962194237f169520803112f1
 };
