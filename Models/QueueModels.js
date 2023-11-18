@@ -17,7 +17,7 @@ const QueueSchema = new mongoose.Schema({
     required: true
   }]
 });
-
+//udhbfu
 const Queue = mongoose.model('Queue', QueueSchema);
 
 export default Queue;
