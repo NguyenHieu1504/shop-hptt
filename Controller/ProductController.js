@@ -68,15 +68,23 @@ const addProductsToQueue = asyncHandler(async (req, res) => {
   const { idUser, idProduct } = req.body;
 
   if (!idUser || !idProduct || !Array.isArray(idProduct)) {
-    return res.status(400).json({ success: false, error: 'Invalid data provided' });
+    return res
+      .status(400)
+      .json({ success: false, error: 'Invalid data provided' });
   }
 
   try {
-    const newQueue = await Queue.create({ user_id: idUser, products: idProduct, isConfirm: 0 });
+    const newQueue = await Queue.create({
+      user_id: idUser,
+      products: idProduct,
+      isConfirm: 0,
+    });
 
     res.status(201).json({ success: true, data: newQueue });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error adding products to queue' });
+    res
+      .status(500)
+      .json({ success: false, error: 'Error adding products to queue' });
   }
 });
 
@@ -86,49 +94,85 @@ const getQueueList = asyncHandler(async (req, res) => {
 
     res.status(200).json({ success: true, data: queueList });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error fetching queue list' });
+    res
+      .status(500)
+      .json({ success: false, error: 'Error fetching queue list' });
   }
 });
 
 const getQueueListWithIsConfirmZero = asyncHandler(async (req, res) => {
   try {
-    const queueList = await Queue.find({ isConfirm: 0 }).populate('products', 'name price');
+    const queueList = await Queue.find({ isConfirm: 0 }).populate(
+      'products',
+      'name price'
+    );
 
     res.status(200).json({ success: true, data: queueList });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: 'Error fetching queue list with isConfirm 0',
+      });
   }
 });
 
 const getQueueListWithIsConfirmOne = asyncHandler(async (req, res) => {
   try {
-    const queueList = await Queue.find({ isConfirm: 1 }).populate('products', 'name price');
+    const queueList = await Queue.find({ isConfirm: 1 }).populate(
+      'products',
+      'name price'
+    );
 
     res.status(200).json({ success: true, data: queueList });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: 'Error fetching queue list with isConfirm 0',
+      });
   }
 });
 
 const getQueueListWithIsConfirmTwo = asyncHandler(async (req, res) => {
   try {
-    const queueList = await Queue.find({ isConfirm: 2 }).populate('products', 'name price');
+    const queueList = await Queue.find({ isConfirm: 2 }).populate(
+      'products',
+      'name price'
+    );
 
     res.status(200).json({ success: true, data: queueList });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error fetching queue list with isConfirm 0' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: 'Error fetching queue list with isConfirm 0',
+      });
   }
 });
 
 const updateIsConfirm = asyncHandler(async (req, res) => {
   const { queueId, newIsConfirmValue } = req.body;
 
-  if (!queueId || !newIsConfirmValue || ![0, 1, 2].includes(newIsConfirmValue)) {
-    return res.status(400).json({ success: false, error: 'Invalid data provided' });
+  if (
+    !queueId ||
+    !newIsConfirmValue ||
+    ![0, 1, 2].includes(newIsConfirmValue)
+  ) {
+    return res
+      .status(400)
+      .json({ success: false, error: 'Invalid data provided' });
   }
 
   try {
-    const updatedQueue = await Queue.findByIdAndUpdate(queueId, { isConfirm: newIsConfirmValue }, { new: true });
+    const updatedQueue = await Queue.findByIdAndUpdate(
+      queueId,
+      { isConfirm: newIsConfirmValue },
+      { new: true }
+    );
 
     if (!updatedQueue) {
       return res.status(404).json({ success: false, error: 'Queue not found' });
@@ -136,15 +180,15 @@ const updateIsConfirm = asyncHandler(async (req, res) => {
 
     res.status(200).json({ success: true, data: updatedQueue });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error updating isConfirm in queue' });
+    res
+      .status(500)
+      .json({ success: false, error: 'Error updating isConfirm in queue' });
   }
 });
 
-
-
 const showProductGender = asyncHandler(async (req, res) => {
   try {
-    console.log("==llllllllllllllllllll=================")
+    console.log('==llllllllllllllllllll=================');
     const { gender } = req.params;
 
     // Validate if the provided gender is valid
@@ -167,20 +211,22 @@ const showTrendProduct = asyncHandler(async (req, res) => {
     const trendingProducts = await Product.aggregate([
       {
         $addFields: {
-          avgRating: { $avg: "$rate" } // Tính trung bình rating của sản phẩm
-        }
+          avgRating: { $avg: '$rate' }, // Tính trung bình rating của sản phẩm
+        },
       },
       {
-        $sort: { avgRating: -1 } // Sắp xếp theo trung bình rating giảm dần
+        $sort: { avgRating: -1 }, // Sắp xếp theo trung bình rating giảm dần
       },
       {
-        $limit: 6 // Giới hạn số lượng sản phẩm lấy ra là 6
-      }
+        $limit: 6, // Giới hạn số lượng sản phẩm lấy ra là 6
+      },
     ]);
 
     res.status(200).json({ success: true, data: trendingProducts });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error fetching trending products' });
+    res
+      .status(500)
+      .json({ success: false, error: 'Error fetching trending products' });
   }
 });
 
@@ -188,7 +234,7 @@ const showNewProducts = asyncHandler(async (req, res) => {
   try {
     // Lấy ngày hiện tại
     const currentDate = new Date();
-    console.log("===================")
+    console.log('===================');
     // Tìm 5 sản phẩm có createdAt gần với hôm nay nhất
     const newProducts = await Product.find()
       .sort({ created_at: -1 }) // Sắp xếp giảm dần theo created_at
@@ -198,7 +244,7 @@ const showNewProducts = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
-}) 
+});
 
 // api updateProduct
 const updateProduct = asyncHandler(async (req, res) => {
@@ -376,9 +422,9 @@ export {
   viewDetailProduct,
   createReviewProduct,
   deleteReviewProduct,
-<<<<<<< HEAD
+  /* <<<<<<< HEAD */
   getAllProducts,
-=======
+  /* ======= */
   showProductGender,
   showNewProducts,
   showTrendProduct,
@@ -389,5 +435,5 @@ export {
   getQueueListWithIsConfirmOne,
   getQueueListWithIsConfirmTwo,
   updateIsConfirm,
->>>>>>> ce87e61b5e94ed4d962194237f169520803112f1
+  /* >>>>>>> ce87e61b5e94ed4d962194237f169520803112f1 */
 };
