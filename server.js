@@ -6,6 +6,7 @@ import userRouter from './Routes/UserRoutes.js';
 import productRouter from './Routes/ProductRoutes.js';
 import voucherRouter from './Routes/VoucherRouter.js';
 import orderRouter from './Routes/OrderRoutes.js';
+import Uploadrouter from './Controller/upLoadFile.js';
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ app.use('/v4/user', userRouter);
 app.use('/v4/product', productRouter);
 app.use('/v4/voucher', voucherRouter);
 app.use('/v4/order', orderRouter);
-
+app.use('/v4/upload', Uploadrouter);
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
