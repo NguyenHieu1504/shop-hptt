@@ -7,6 +7,7 @@ import {
   loginUser,
   registerUser,
   updateProfileUser,
+  viewAllLikedProduct,
 } from '../Controller/UserController.js';
 import { protect } from '../Middleware/Auth.js';
 
@@ -18,8 +19,8 @@ router.post('/login', loginUser);
 router.put('/updateProfile', protect, updateProfileUser);
 router.put('/changepassword', protect, changePassword);
 
-
 router.post('/addLikedProduct', protect, addLikedProduct);
+router.get('/viewAllLikedProduct', protect, viewAllLikedProduct);
 router.delete('/deleteLikedProduct', protect, deleteLikedProduct);
 router.get('/getLikedProduct', protect, getLikedProducts);
 export default router;

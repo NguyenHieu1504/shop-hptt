@@ -161,6 +161,29 @@ const addLikedProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// view all likedProduct
+const viewAllLikedProduct = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Truy vấn người dùng để lấy danh sách sản phẩm yêu thích
+    const user = await User.findById(userId).populate('likedProduct.productId');
+
+    // Kiểm tra xem người dùng có tồn tại không
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Lấy danh sách sản phẩm yêu thích từ user.likedProduct
+    const likedProducts = user.likedProduct;
+
+    // Trả về danh sách sản phẩm yêu thích
+    res.status(200).json({ likedProducts });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // list product from addLikedProduct
 const getLikedProducts = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).populate(
@@ -214,4 +237,5 @@ export {
   addLikedProduct,
   deleteLikedProduct,
   getLikedProducts,
+  viewAllLikedProduct,
 };
