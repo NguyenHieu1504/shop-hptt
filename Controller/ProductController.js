@@ -65,19 +65,33 @@ const showAllProducts = asyncHandler(async (req, res) => {
   }
 });
 const addProductsToQueue = asyncHandler(async (req, res) => {
-  const { idUser, idProduct } = req.body;
+  const { idUser, products, voucherId, finalPrice } = req.body;
 
-  if (!idUser || !idProduct || !Array.isArray(idProduct)) {
+  if (
+    !idUser ||
+    !products ||
+    !Array.isArray(products) ||
+    !voucherId ||
+    !finalPrice
+  ) {
     return res
       .status(400)
       .json({ success: false, error: 'Invalid data provided' });
   }
 
   try {
+    const productDetails = [];
+    for (const product of products) {
+      const { idProduct, quantity, size, color } = product;
+      productDetails.push({ product: idProduct, quantity, size, color });
+    }
+
     const newQueue = await Queue.create({
       user_id: idUser,
-      products: idProduct,
+      products: productDetails,
       isConfirm: 0,
+      voucher: voucherId,
+      finalPrice: finalPrice,
     });
 
     res.status(201).json({ success: true, data: newQueue });
@@ -85,6 +99,69 @@ const addProductsToQueue = asyncHandler(async (req, res) => {
     res
       .status(500)
       .json({ success: false, error: 'Error adding products to queue' });
+  }
+});
+
+const getQueueListByUser = asyncHandler(async (req, res) => {
+  try {
+    const { userId } = req.params; // Lấy userID từ params
+
+    // Tìm danh sách Queue có user_id là userId
+    const queueList = await Queue.find({ user_id: userId })
+      .populate({
+        path: 'products.product', // Populate thông tin sản phẩm
+        model: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
+        select: 'name price', // Chọn các trường cần hiển thị của sản phẩm
+      })
+      .populate({
+        path: 'voucher', // Populate thông tin voucher
+        model: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
+        select: 'code discount', // Chọn các trường cần hiển thị của voucher
+      })
+      .exec();
+
+    // Trả về danh sách Queue cho người dùng
+    res.status(200).json({ success: true, data: queueList });
+  } catch (error) {
+    // Xử lý lỗi nếu có
+    res
+      .status(500)
+      .json({ success: false, error: 'Lỗi khi lấy danh sách Queue' });
+  }
+});
+
+const getQueueDetail = asyncHandler(async (req, res) => {
+  try {
+    const { queueId } = req.params; // Lấy queueId từ params
+
+    // Tìm Queue có _id là queueId
+    const queueDetail = await Queue.findById(queueId)
+      .populate({
+        path: 'products.product', // Populate thông tin sản phẩm
+        model: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
+        select: 'name price', // Chọn các trường cần hiển thị của sản phẩm
+      })
+      .populate({
+        path: 'voucher', // Populate thông tin voucher
+        model: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
+        select: 'code discount', // Chọn các trường cần hiển thị của voucher
+      })
+      .exec();
+
+    // Kiểm tra xem queueDetail có tồn tại hay không
+    if (!queueDetail) {
+      return res
+        .status(404)
+        .json({ success: false, error: 'Không tìm thấy thông tin Queue' });
+    }
+
+    // Trả về thông tin chi tiết của Queue
+    res.status(200).json({ success: true, data: queueDetail });
+  } catch (error) {
+    // Xử lý lỗi nếu có
+    res
+      .status(500)
+      .json({ success: false, error: 'Lỗi khi lấy thông tin Queue' });
   }
 });
 
@@ -109,12 +186,10 @@ const getQueueListWithIsConfirmZero = asyncHandler(async (req, res) => {
 
     res.status(200).json({ success: true, data: queueList });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: 'Error fetching queue list with isConfirm 0',
-      });
+    res.status(500).json({
+      success: false,
+      error: 'Error fetching queue list with isConfirm 0',
+    });
   }
 });
 
@@ -127,12 +202,10 @@ const getQueueListWithIsConfirmOne = asyncHandler(async (req, res) => {
 
     res.status(200).json({ success: true, data: queueList });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: 'Error fetching queue list with isConfirm 0',
-      });
+    res.status(500).json({
+      success: false,
+      error: 'Error fetching queue list with isConfirm 0',
+    });
   }
 });
 
@@ -145,12 +218,10 @@ const getQueueListWithIsConfirmTwo = asyncHandler(async (req, res) => {
 
     res.status(200).json({ success: true, data: queueList });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: 'Error fetching queue list with isConfirm 0',
-      });
+    res.status(500).json({
+      success: false,
+      error: 'Error fetching queue list with isConfirm 0',
+    });
   }
 });
 
@@ -206,6 +277,7 @@ const showProductGender = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, error: 'Server Error' });
   }
 });
+
 const showTrendProduct = asyncHandler(async (req, res) => {
   try {
     const trendingProducts = await Product.aggregate([
@@ -435,5 +507,6 @@ export {
   getQueueListWithIsConfirmOne,
   getQueueListWithIsConfirmTwo,
   updateIsConfirm,
-  /* >>>>>>> ce87e61b5e94ed4d962194237f169520803112f1 */
+  getQueueListByUser,
+  getQueueDetail,
 };

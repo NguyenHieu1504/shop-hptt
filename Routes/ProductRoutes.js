@@ -17,7 +17,9 @@ import {
   getQueueListWithIsConfirmZero,
   getQueueListWithIsConfirmOne,
   getQueueListWithIsConfirmTwo,
-  updateIsConfirm
+  updateIsConfirm,
+  getQueueListByUser,
+  getQueueDetail
 } from '../Controller/ProductController.js';
 
 /* Public routes */
@@ -31,7 +33,9 @@ router.get('/list/:gender', showProductGender);
 router.get('/new/list/', showNewProducts);
 router.get('/trend/list/', showTrendProduct);
 router.get('/all/list/', showAllProducts);
-router.post('/queue/add',protect, isAdmin, addProductsToQueue);
+router.post('/queue/add',protect, addProductsToQueue);
+router.get('/queue/user/list/:userId',protect, getQueueListByUser);
+router.get('/queue/user/detail/:queueId',protect, getQueueDetail);
 router.get('/queue/list/',protect, isAdmin, getQueueList);
 router.get('/isConfirmZero/queue/',protect, isAdmin, getQueueListWithIsConfirmZero);
 router.get('/isConfirmOne/queue/',protect, isAdmin, getQueueListWithIsConfirmOne);
