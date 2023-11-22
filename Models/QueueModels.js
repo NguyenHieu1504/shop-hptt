@@ -27,6 +27,16 @@ const QueueSchema = new mongoose.Schema({
         type: Number,
         ref: 'Quantity', 
         required: true,
+      },
+      size: {
+        type: String,
+        ref: 'Size', 
+        required: true,
+      },
+      color: {
+        type: String,
+        ref: 'Color', 
+        required: true,
       }
     }
   ],
