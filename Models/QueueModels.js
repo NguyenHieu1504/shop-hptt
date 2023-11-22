@@ -8,14 +8,21 @@ const QueueSchema = new mongoose.Schema({
   },
   isConfirm:{
     type: Number,
-    enum: [0, 1, 2],
+    enum: [0, 1, 2, 3],
+    //0: Chờ xác nhận
+    //1: Đã xác nhận
+    //2: Hủy đơn hàng
+    //3: Hoàn thành đơn hàng
     required: true,
+    default: 0,
   },
   products: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
     required: true
   }]
+},{
+  timestamps: true,
 });
 //udhbfu
 const Queue = mongoose.model('Queue', QueueSchema);
