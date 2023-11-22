@@ -111,7 +111,7 @@ const orderSchema = new mongoose.Schema({
     default: 'Chờ xác nhận',
   },
   deliveriedAt: Date,
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now() },
 });
 
 orderSchema.statics.getProductInfo = async function (productId) {

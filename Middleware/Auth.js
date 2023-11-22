@@ -39,4 +39,13 @@ const isAdmin = asyncHandler(async (req, res, next) => {
     throw new Error('Not authorized as a admin');
   }
 });
-export { generateToken, protect, isAdmin };
+
+const isBoss = asyncHandler(async (req, res, next) => {
+  if (req.user && req.user.role === 'boss') {
+    next();
+  } else {
+    res.status(401);
+    throw new Error('Not authorized as a admin');
+  }
+});
+export { generateToken, protect, isAdmin, isBoss };

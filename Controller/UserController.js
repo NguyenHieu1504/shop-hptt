@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import User from '../Models/UserModels.js';
 import mongoose from 'mongoose';
 import { generateToken } from '../Middleware/Auth.js';
-
+import Order from '../Models/OrderModels.js';
 // register user
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, phoneNumber, address, password, images } = req.body;
@@ -138,11 +138,11 @@ const addLikedProduct = asyncHandler(async (req, res) => {
     }
 
     // Kiểm tra xem sản phẩm đã có trong danh sách yêu thích chưa
-    const existingProductIndex = user.likedProduct.findIndex(
-      (product) => product.productId === productId
+    const isProductLiked = user.likedProduct.some(
+      (product) => product.productId.toString() === productId.toString()
     );
 
-    if (existingProductIndex !== -1) {
+    if (isProductLiked) {
       return res.status(400).json({ message: 'Product already liked' });
     }
 
@@ -229,6 +229,44 @@ const deleteLikedProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// statistical product in month, year
+
+const statisticalSellProduct = asyncHandler(async (req, res) => {
+  try {
+    const { year, month } = req.query; // Thay đổi từ params sang query
+
+    // Xử lý tham số đầu vào (nếu cần)
+    // ...
+
+    // Truy vấn cơ sở dữ liệu để lấy thông tin đơn hàng theo tháng và năm
+    const orders = await Order.find({
+      createdAt: {
+        $gte: new Date(`${year}-${month}-01T00:00:00.000Z`),
+        $lt: new Date(`${year}-${parseInt(month) + 1}-01T00:00:00.000Z`),
+      },
+    });
+
+    // Xử lý dữ liệu trả về (nếu cần)
+    // ...
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// get Profile user
+
+const getProfile = asyncHandler(async (req, res) => {
+  const { fullName, email, phoneNumber, address, images } = req.user;
+  res.json({
+    fullName,
+    email,
+    phoneNumber,
+    address,
+    images,
+  });
+});
 export {
   registerUser,
   loginUser,
@@ -238,4 +276,6 @@ export {
   deleteLikedProduct,
   getLikedProducts,
   viewAllLikedProduct,
+  statisticalSellProduct,
+  getProfile,
 };
