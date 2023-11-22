@@ -6,7 +6,7 @@ const QueueSchema = new mongoose.Schema({
     ref: 'User', // Thay 'User' bằng tên của schema User nếu có
     required: true
   },
-  isConfirm:{
+  isConfirm: {
     type: Number,
     enum: [0, 1, 2, 3],
     //0: Chờ xác nhận
@@ -16,11 +16,31 @@ const QueueSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-  products: [{
+  products: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
+        required: true
+      },
+      quantity: {
+        type: Number,
+        ref: 'Quantity', 
+        required: true,
+      }
+    }
+  ],
+  voucher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
     required: true
-  }]
+  },
+  finalPrice: {
+    type: Number,
+    ref: 'FinalPrice', // Thay 'Product' bằng tên của schema Product nếu có
+    required: true
+  }
+  
 },{
   timestamps: true,
 });

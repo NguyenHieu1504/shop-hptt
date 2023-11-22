@@ -65,14 +65,26 @@ const showAllProducts = asyncHandler(async (req, res) => {
   }
 });
 const addProductsToQueue = asyncHandler(async (req, res) => {
-  const { idUser, idProduct } = req.body;
+  const { idUser, products, voucherId, finalPrice } = req.body;
 
-  if (!idUser || !idProduct || !Array.isArray(idProduct)) {
+  if (!idUser || !products || !Array.isArray(products) || !voucherId || !finalPrice) {
     return res.status(400).json({ success: false, error: 'Invalid data provided' });
   }
 
   try {
-    const newQueue = await Queue.create({ user_id: idUser, products: idProduct, isConfirm: 0 });
+    const productDetails = [];
+    for (const product of products) {
+      const { idProduct, quantity } = product;
+      productDetails.push({ product: idProduct, quantity });
+    }
+
+    const newQueue = await Queue.create({
+      user_id: idUser,
+      products: productDetails,
+      isConfirm: 0,
+      voucher: voucherId,
+      finalPrice: finalPrice,
+    });
 
     res.status(201).json({ success: true, data: newQueue });
   } catch (error) {
@@ -162,6 +174,8 @@ const showProductGender = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, error: 'Server Error' });
   }
 });
+
+
 const showTrendProduct = asyncHandler(async (req, res) => {
   try {
     const trendingProducts = await Product.aggregate([
