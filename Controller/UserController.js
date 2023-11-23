@@ -138,15 +138,31 @@ const addLikedProduct = asyncHandler(async (req, res) => {
     }
 
     // Kiểm tra xem sản phẩm đã có trong danh sách yêu thích chưa
-    const isProductLiked = user.likedProduct.some(
+    const existingProduct = user.likedProduct.find(
       (product) => product.productId.toString() === productId.toString()
     );
 
-    if (isProductLiked) {
-      return res.status(400).json({ message: 'Product already liked' });
+    if (existingProduct) {
+      // Nếu sản phẩm đã có, kiểm tra xem size có giống nhau không
+      if (existingProduct.size === size) {
+        return res
+          .status(400)
+          .json({ message: 'Product already liked with the same size' });
+      } else {
+        // Nếu size khác nhau, thêm sản phẩm mới vào danh sách yêu thích
+        user.likedProduct.push({
+          productId,
+          size,
+          color,
+        });
+        await user.save();
+        return res.status(200).json({
+          message: 'Product added to liked list with a different size',
+        });
+      }
     }
 
-    // Thêm sản phẩm vào danh sách yêu thích với thông tin thêm
+    // Nếu sản phẩm chưa có, thêm vào danh sách yêu thích
     user.likedProduct.push({
       productId,
       size,
