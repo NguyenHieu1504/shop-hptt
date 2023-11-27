@@ -1,0 +1,37 @@
+{
+    "data": {
+        "totalQuantity": 21,
+        "totalPrice": 324325423,
+        "products": [
+            {
+                "productId": "3245345345g34y25ug",
+                "name": "name",
+                "quantity": 12
+            },
+            {
+                "productId": "3245345345g34y25ug",
+                "name": "name",
+                "quantity": 12
+            },
+            {
+                "productId": "3245345345g34y25ug",
+                "name": "name",
+                "quantity": 12
+            },
+            {
+                "productId": "3245345345g34y25ug",
+                "name": "name",
+                "quantity": 12
+            },
+            {
+                "productId": "3245345345g34y25ug",
+                "name": "name",
+                "quantity": 12
+            }
+        ]
+    }
+    
+}
+
+
+Tuần(7 ngày ngày gần ngất), Tháng(Trong tháng này), Quý(quý 1, ), Năm(từ đầu năm đến giờ)

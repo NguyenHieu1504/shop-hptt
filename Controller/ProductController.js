@@ -3,7 +3,7 @@ import Product from '../Models/ProductModels.js';
 import Queue from '../Models/QueueModels.js';
 import asyncHandler from 'express-async-handler';
 import User from '../Models/UserModels.js';
-
+import moment from 'moment';
 // api create product
 
 const createProduct = asyncHandler(async (req, res) => {
@@ -201,6 +201,86 @@ const updateIsConfirm = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, data: updatedQueue });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Error updating isConfirm in queue' });
+  }
+});
+
+const getStatistical = asyncHandler(async (req, res) => {
+  const { start, end } = req.query;
+
+
+  const startDate = new Date(start);
+    const endDate = new Date(end);
+  console.log("endDate: ", endDate)
+  try {
+    // Tính toán tổng số lượng sản phẩm và tổng giá
+    const queueA = await Queue.find({
+      createdAt: { $gte: startDate, },
+      isConfirm: 3,
+    }).populate('products.product', 'name'); 
+    console.log("EndDate:", endDate);
+const queueB = await Queue.find({
+  updatedAt: { $lt: endDate },
+  isConfirm: 1,
+})
+
+console.log("QueueB length:", queueB.length);
+console.log("QueueB data:", queueB);
+    let queues = [];
+    for (let i = 0; i < queueA.length; i++) {
+      // Kiểm tra xem phần tử hiện tại của A có tồn tại trong mảng B không
+      if (queueB.includes(queueA[i])) {
+          // Nếu tồn tại, thêm vào mảng các phần tử giống nhau
+          queues.push(queueA[i]);
+      }
+  }
+  console.log("queueA: ", queueA)
+  console.log("queueB: ",queueB)
+  
+    let totalQuantity = 0;
+    let totalPrice = 0;
+    const products = {};
+
+    // Lặp qua các đơn hàng để tính toán thống kê
+    queueA.forEach(queue => {
+      
+      queue.products.forEach(product => {
+        const productId = product._id;
+        const productName =  Product.find({_id: product._id}).name;
+        const quantity = product.quantity;
+        const price = Product.find({_id: product._id}).price * quantity;
+
+        // Tăng tổng số lượng và tổng giá
+        totalQuantity += quantity;
+        totalPrice += price;
+
+        // Tạo hoặc cập nhật thông tin sản phẩm
+        if (!products[productId]) {
+          products[productId] = {
+            productId,
+            name: productName,
+            quantity
+          };
+        } else {
+          products[productId].quantity += quantity;
+        }
+      });
+    });
+
+    // Format dữ liệu thống kê theo yêu cầu
+    const productList = Object.values(products);
+
+    const responseData = {
+      data: {
+        totalQuantity,
+        totalPrice,
+        products: productList
+      }
+    };
+
+    res.json(responseData);
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -448,4 +528,5 @@ export {
   updateIsConfirm,
   getQueueListByUser,
   getQueueDetail,
+  getStatistical
 };
