@@ -39,7 +39,7 @@ router.get('/queue/list/',protect, isAdmin, getQueueList);
 router.get('/isConfirmZero/queue/',protect, isAdmin, getQueueListWithIsConfirmZero);
 router.get('/isConfirmOne/queue/',protect, isAdmin, getQueueListWithIsConfirmOne);
 router.get('/isConfirmTwo/queue/',protect, isAdmin, getQueueListWithIsConfirmTwo);
-router.put('/updateIsConfirm/queue', updateIsConfirm);
+router.post('/updateIsConfirm/queue', protect, isAdmin, updateIsConfirm);
 
 
 // review product

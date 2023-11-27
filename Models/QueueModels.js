@@ -41,9 +41,9 @@ const QueueSchema = new mongoose.Schema({
     }
   ],
   voucher: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
-    required: true
+    type: mongoose.Schema.Types.ObjectId || null,
+    //ref: 'Product', // Thay 'Product' bằng tên của schema Product nếu có
+    //required: true
   },
   finalPrice: {
     type: Number,
