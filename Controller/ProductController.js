@@ -227,9 +227,8 @@ console.log("QueueB length:", queueB.length);
 console.log("QueueB data:", queueB);
     let queues = [];
     for (let i = 0; i < queueA.length; i++) {
-      // Kiểm tra xem phần tử hiện tại của A có tồn tại trong mảng B không
+ 
       if (queueB.includes(queueA[i])) {
-          // Nếu tồn tại, thêm vào mảng các phần tử giống nhau
           queues.push(queueA[i]);
       }
   }
@@ -330,6 +329,7 @@ const showTrendProduct = asyncHandler(async (req, res) => {
   }
 });
 
+
 const showNewProducts = asyncHandler(async (req, res) => {
   try {
     // Lấy ngày hiện tại
@@ -344,7 +344,7 @@ const showNewProducts = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
-}) 
+})
 
 // api updateProduct
 const updateProduct = asyncHandler(async (req, res) => {
