@@ -3,6 +3,7 @@ import User from '../Models/UserModels.js';
 import mongoose from 'mongoose';
 import { generateToken } from '../Middleware/Auth.js';
 import Order from '../Models/OrderModels.js';
+import Queue from '../Models/QueueModels.js';
 // register user
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, phoneNumber, address, password, images } = req.body;
@@ -247,29 +248,55 @@ const deleteLikedProduct = asyncHandler(async (req, res) => {
 
 // statistical product in month, year
 
-const statisticalSellProduct = asyncHandler(async (req, res) => {
+/* const statisticalSellProduct = asyncHandler(async (req, res) => {
   try {
-    const { year, month } = req.query; // Thay đổi từ params sang query
+    const { year, month } = req.query;
 
-    // Xử lý tham số đầu vào (nếu cần)
-    // ...
+    // Chuyển giá trị tháng thành chuỗi để giữ số 0 ở đầu
+    const monthString = month.toString();
 
-    // Truy vấn cơ sở dữ liệu để lấy thông tin đơn hàng theo tháng và năm
-    const orders = await Order.find({
+    // Chuyển chuỗi tháng thành số và giữ số 0 ở đầu nếu cần
+    const parsedMonth = parseInt(monthString, 10);
+
+    console.log('Parsed month: ' + parsedMonth, typeof parsedMonth);
+    if (isNaN(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
+      console.error('Invalid month:', month);
+      return res.status(400).json({ error: 'Invalid month' });
+    }
+
+    // Chuyển đổi tháng có một chữ số thành chuỗi có hai chữ số
+    const formattedMonth =
+      parsedMonth < 10 ? `0${parsedMonth}` : `${parsedMonth}`;
+    const formattedMonthNum = Number(formattedMonth);
+    console.log(
+      'Formatted Month: ' + formattedMonthNum,
+      typeof formattedMonthNum
+    );
+    // Tạo ngày bắt đầu và ngày kết thúc
+    const startDate = new Date(`${year}-${formattedMonthNum}-01T00:00:00.000Z`);
+    const endDate = new Date(
+      `${year}-${formattedMonthNum + 1}-01T00:00:00.000Z`
+    );
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      console.error('Invalid startDate or endDate');
+      return res.status(400).json({ error: 'Invalid startDate or endDate' });
+    }
+
+    // Truy vấn cơ sở dữ liệu để lấy thông tin sản phẩm theo tháng và năm
+    const products = await Queue.find({
       createdAt: {
-        $gte: new Date(`${year}-${month}-01T00:00:00.000Z`),
-        $lt: new Date(`${year}-${parseInt(month) + 1}-01T00:00:00.000Z`),
+        $gte: startDate,
+        $lt: endDate,
       },
     });
 
-    // Xử lý dữ liệu trả về (nếu cần)
-    // ...
-
-    res.status(200).json({ orders });
+    res.status(200).json({ products });
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: error.message });
   }
-});
+}); */
 
 // get Profile user
 
@@ -292,6 +319,5 @@ export {
   deleteLikedProduct,
   getLikedProducts,
   viewAllLikedProduct,
-  statisticalSellProduct,
   getProfile,
 };

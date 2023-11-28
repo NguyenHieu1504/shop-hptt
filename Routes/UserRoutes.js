@@ -7,7 +7,6 @@ import {
   getProfile,
   loginUser,
   registerUser,
-  statisticalSellProduct,
   updateProfileUser,
   viewAllLikedProduct,
 } from '../Controller/UserController.js';
@@ -27,5 +26,5 @@ router.delete('/deleteLikedProduct', protect, deleteLikedProduct);
 router.get('/getLikedProduct', protect, getLikedProducts);
 
 // statisticalSellProduct
-router.get('/statisticSellProduct', protect, isBoss, statisticalSellProduct);
+/* router.get('/statisticSellProduct', protect, isBoss, statisticalSellProduct); */
 export default router;
