@@ -45,7 +45,10 @@ const isBoss = asyncHandler(async (req, res, next) => {
     next();
   } else {
     res.status(401);
+
     throw new Error('Not authorized as a admin');
+
+    throw new Error('Not authorized as a boss');
   }
 });
 export { generateToken, protect, isAdmin, isBoss };

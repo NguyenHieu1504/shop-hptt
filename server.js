@@ -6,13 +6,17 @@ import userRouter from './Routes/UserRoutes.js';
 import productRouter from './Routes/ProductRoutes.js';
 import voucherRouter from './Routes/VoucherRouter.js';
 import orderRouter from './Routes/OrderRoutes.js';
+
 import Uploadrouter from './Controller/upLoadFile.js';
+
+import methodOverride from 'method-override';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(methodOverride('_method'));
 
 // connectDB
 connectDB();
@@ -20,6 +24,7 @@ connectDB();
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
+
 /* User Router */
 app.use('/v4/user', userRouter);
 app.use('/v4/product', productRouter);

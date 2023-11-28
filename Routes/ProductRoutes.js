@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAdmin, protect } from '../Middleware/Auth.js';
+import { isAdmin, protect, isBoss } from '../Middleware/Auth.js';
 import {
   createProduct,
   createReviewProduct,
@@ -19,7 +19,8 @@ import {
   getQueueListWithIsConfirmTwo,
   updateIsConfirm,
   getQueueListByUser,
-  getQueueDetail
+  getQueueDetail,
+  getStatistical
 } from '../Controller/ProductController.js';
 
 /* Public routes */
@@ -40,7 +41,9 @@ router.get('/queue/list/',protect, isAdmin, getQueueList);
 router.get('/isConfirmZero/queue/',protect, isAdmin, getQueueListWithIsConfirmZero);
 router.get('/isConfirmOne/queue/',protect, isAdmin, getQueueListWithIsConfirmOne);
 router.get('/isConfirmTwo/queue/',protect, isAdmin, getQueueListWithIsConfirmTwo);
-router.put('/updateIsConfirm/queue', updateIsConfirm);
+router.post('/updateIsConfirm/queue', protect, isAdmin, updateIsConfirm);
+router.get('/statistical/queue', protect, isBoss, getStatistical);
+
 
 
 // review product
